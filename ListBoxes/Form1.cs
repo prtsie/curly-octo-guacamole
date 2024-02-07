@@ -82,12 +82,7 @@ namespace ListBoxes
             if (sender is ListBox list && list != draggedFrom)
             {
                 var dragged = args.Data!.GetData(typeof(ListBox.SelectedObjectCollection)) as ListBox.SelectedObjectCollection;
-                while (dragged!.Count > 0)
-                {
-                    list.Items.Add(dragged[0]!);
-                    draggedFrom!.Items.Remove(dragged[0]!);
-                }
-                OnChange();
+                MoveItems(draggedFrom!, list, dragged!);
             }
         }
 
