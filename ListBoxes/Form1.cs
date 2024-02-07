@@ -4,7 +4,7 @@ namespace ListBoxes
 {
     public partial class Form1 : Form
     {
-        private readonly string[] someData = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
+        private readonly string[] someData = ["РџРѕРЅРµРґРµР»СЊРЅРёРє", "Р’С‚РѕСЂРЅРёРє", "РЎСЂРµРґР°", "Р§РµС‚РІРµСЂРі", "РџСЏС‚РЅРёС†Р°", "РЎСѓР±Р±РѕС‚Р°", "Р’РѕСЃРєСЂРµСЃРµРЅСЊРµ"];
         private ListBox? draggedFrom;
 
         public Form1()
