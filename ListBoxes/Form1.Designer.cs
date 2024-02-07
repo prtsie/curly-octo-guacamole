@@ -38,19 +38,23 @@
             // 
             // LeftList
             // 
+            LeftList.AllowDrop = true;
             LeftList.FormattingEnabled = true;
             LeftList.ItemHeight = 15;
             LeftList.Location = new Point(12, 12);
             LeftList.Name = "LeftList";
+            LeftList.SelectionMode = SelectionMode.MultiExtended;
             LeftList.Size = new Size(120, 109);
             LeftList.TabIndex = 0;
             // 
             // RightList
             // 
+            RightList.AllowDrop = true;
             RightList.FormattingEnabled = true;
             RightList.ItemHeight = 15;
             RightList.Location = new Point(176, 12);
             RightList.Name = "RightList";
+            RightList.SelectionMode = SelectionMode.MultiExtended;
             RightList.Size = new Size(120, 109);
             RightList.TabIndex = 1;
             // 

@@ -4,7 +4,8 @@ namespace ListBoxes
 {
     public partial class Form1 : Form
     {
-        readonly string[] someData = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
+        private readonly string[] someData = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
+        private ListBox? draggedFrom;
 
         public Form1()
         {
@@ -13,38 +14,21 @@ namespace ListBoxes
             {
                 LeftList.Items.Add(item);
             }
-            OnSelect();
+            OnChange();
 
-            SelectedToLeft.Click += (sender, args) => MoveSelectedToLeft();
-            SelectedToRight.Click += (sender, args) => MoveSelectedToRight();
+            SelectedToLeft.Click += (sender, args) => MoveItems(RightList, LeftList, RightList.SelectedItems);
+            SelectedToRight.Click += (sender, args) => MoveItems(LeftList, RightList, LeftList.SelectedItems);
             AllToLeft.Click += (sender, args) => MoveAllToLeft();
             AllToRight.Click += (sender, args) => MoveAllToRight();
-            LeftList.SelectedValueChanged += (sender, args) => OnSelect();
-            RightList.SelectedValueChanged += (sender, args) => OnSelect();
-        }
 
-        private void MoveSelectedToRight()
-        {
-            MoveItems(LeftList, RightList, LeftList.SelectedItems);
-            if (LeftList.Items.Count == 0)
-            {
-                AllToRight.Enabled = false;
-                SelectedToRight.Enabled = false;
-            }
-            AllToLeft.Enabled = true;
-        }
+            LeftList.MouseDown += OnMouseDown;
+            LeftList.DragEnter += OnDragEnter;
+            LeftList.DragDrop += OnDragDrop;
 
-        private void MoveSelectedToLeft()
-        {
-            MoveItems(RightList, LeftList, RightList.SelectedItems);
-            if (RightList.Items.Count == 0)
-            {
-                AllToLeft.Enabled = false;
-                SelectedToLeft.Enabled = false;
-            }
-            AllToRight.Enabled = true;
+            RightList.MouseDown += OnMouseDown;
+            RightList.DragEnter += OnDragEnter;
+            RightList.DragDrop += OnDragDrop;
         }
-
 
         private void MoveAllToRight()
         {
@@ -54,9 +38,6 @@ namespace ListBoxes
                 LeftList.SelectedItems.Add(LeftList.Items[i]);
             }
             MoveItems(LeftList, RightList, LeftList.Items);
-            AllToRight.Enabled = false;
-            SelectedToRight.Enabled = false;
-            AllToLeft.Enabled = true;
         }
 
         private void MoveAllToLeft()
@@ -67,9 +48,6 @@ namespace ListBoxes
                 RightList.SelectedItems.Add(LeftList.Items[i]);
             }
             MoveItems(RightList, LeftList, RightList.Items);
-            AllToLeft.Enabled = false;
-            SelectedToRight.Enabled = false;
-            AllToRight.Enabled = true;
         }
 
         private void MoveItems<T>(ListBox from, ListBox to, T items)
@@ -78,12 +56,42 @@ namespace ListBoxes
             while (items.Count > 0)
             {
                 var item = items[0];
-                from.Items.Remove(item);
-                to.Items.Add(item);
+                from.Items.Remove(item!);
+                to.Items.Add(item!);
+            }
+            OnChange();
+        }
+
+        private void OnMouseDown(object? sender, MouseEventArgs args)
+        {
+            OnChange();
+            if (sender is ListBox list)
+            {
+                draggedFrom = list;
+                list.DoDragDrop(list.SelectedItems, DragDropEffects.Copy);
             }
         }
 
-        private void OnSelect()
+        private void OnDragEnter(object? sender, DragEventArgs args)
+        {
+            args.Effect = DragDropEffects.Copy;
+        }
+
+        private void OnDragDrop(object? sender, DragEventArgs args)
+        {
+            if (sender is ListBox list && list != draggedFrom)
+            {
+                var dragged = args.Data!.GetData(typeof(ListBox.SelectedObjectCollection)) as ListBox.SelectedObjectCollection;
+                while (dragged!.Count > 0)
+                {
+                    list.Items.Add(dragged[0]!);
+                    draggedFrom!.Items.Remove(dragged[0]!);
+                }
+                OnChange();
+            }
+        }
+
+        private void OnChange()
         {
             SelectedToRight.Enabled = LeftList.SelectedItems.Count > 0;
             AllToRight.Enabled = LeftList.Items.Count > 0;
